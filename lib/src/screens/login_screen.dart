@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import '../blocs/provider.dart';
+import '../blocs/bloc.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of(context);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 12, vertical: 32),
       child: Column(
         children: [
-          emailField(),
-          passwordField(),
+          emailField(bloc),
+          passwordField(bloc),
           SizedBox(height: 12),
           submitButton(),
         ],
@@ -16,24 +19,41 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget emailField() {
-    return TextField(
-      keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'example@example.com',
-        labelText: 'Email',
-      ),
+  Widget emailField(Bloc bloc) {
+    return StreamBuilder<String>(
+      stream: bloc.email,
+      builder: (context, snapshot) {
+        return TextField(
+          keyboardType: TextInputType.emailAddress,
+          onChanged: (value) {
+            bloc.changeEmail(value);
+          },
+          decoration: InputDecoration(
+            errorText: snapshot.error,
+            hintText: 'example@example.com',
+            labelText: 'Email',
+          ),
+        );
+      },
     );
   }
 
-  Widget passwordField() {
-    return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        hintText: 'password',
-        labelText: 'Password',
-      ),
+  Widget passwordField(Bloc bloc) {
+    return StreamBuilder<String>(
+      stream: bloc.password,
+      builder: (context, snapshot) {
+        return TextField(
+          onChanged: (value) {
+            bloc.changePassword(value);
+          },
+          obscureText: true,
+          decoration: InputDecoration(
+            errorText: snapshot.error,
+            hintText: 'password',
+            labelText: 'Password',
+          ),
+        );
+      },
     );
   }
 
